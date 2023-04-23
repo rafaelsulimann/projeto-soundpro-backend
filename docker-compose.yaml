@@ -1,0 +1,43 @@
+version: "3.7"
+services:
+  service-registry:
+    image: rafaelsulimann/service-registry:v1
+    container_name: service-registry
+    restart: always
+    ports:
+      - 8761:8761
+    #networks:
+    #  - dev-network
+  #config-server:
+  #  image: rafaelsulimann/config-server:v1
+  #  container_name: config-server
+  #  restart: always
+  #  ports:
+  #     - 8888:8888
+  #  environment:
+  #    - EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE=service-registry
+  #    - SPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/rafaelsulimann/soundpro-config-server
+  #    - SPRING_CLOUD_CONFIG_SERVER_GIT_DEFAULT_LABEL=main
+  #    - SPRING_CLOUD_CONFIG_SERVER_GIT_USERNAME=rafaelsulimann
+  #    - SPRING_CLOUD_CONFIG_SERVER_GIT_PASSWORD=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
+  #  depends_on:
+  #    - service-registry
+  #  networks:
+  #    - dev-network
+  #api-gateway:
+  #  image: rafaelsulimann/api-gateway:v1
+  #  container_name: api-gateway
+  #  restart: always
+  #  ports:
+  #    - 8080:8080
+  #  environment:
+  #    - EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE=service-registry
+  #    - CONFIG_SERVER_HOST=config-server
+  #  depends_on:
+  #    - service-registry
+  #    - config-server
+  #  networks:
+  #    - dev-network
+#networks:
+#  dev-network:
+#    driver: bridge

@@ -74,3 +74,11 @@ logging: #é a propriedade raiz das configurações de logging no arquivo YAML.
       springframework:
         web: DEBUG #como DEBUG. Isso significa que todas as mensagens de log com níveis de DEBUG, INFO, WARN, ERROR e FATAL serão registradas para este pacote.
       hibernate: INFO #define o nível de logging para o pacote "org.hibernate" como INFO. Isso significa que todas as mensagens de log com níveis de INFO, WARN, ERROR e FATAL serão registradas para este pacote.
+
+soundpro:
+  firebase:
+    storage:
+      projectId: sound-pro-fa447
+      bucket: sound-pro-fa447.appspot.com
+      filePath: sound-pro-fa447-firebase-adminsdk-hu6cy-683cd0a6eb.json
+      

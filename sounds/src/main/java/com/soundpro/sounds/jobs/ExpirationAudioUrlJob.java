@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
 import com.soundpro.sounds.configs.FirebaseStorageConfig;
-import com.soundpro.sounds.models.SoundTesteFirebase;
-import com.soundpro.sounds.repositories.SoundTesteFirebaseRepository;
+import com.soundpro.sounds.models.Sound;
+import com.soundpro.sounds.repositories.SoundRepository;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -28,7 +28,7 @@ public class ExpirationAudioUrlJob {
     private String bucketName;
 
     @Autowired
-    private SoundTesteFirebaseRepository soundTesteFirebaseRepository;
+    private SoundRepository soundRepository;
 
     @Autowired
     private FirebaseStorageConfig firebaseStorageConfig;
@@ -36,7 +36,7 @@ public class ExpirationAudioUrlJob {
     @Scheduled(cron = "0 0 0 * * *")
     public void executar(){
         log.info("Iniciando ExpirationAudioUrlJob ...");
-        List<SoundTesteFirebase> list = soundTesteFirebaseRepository.findAll();
+        List<Sound> list = soundRepository.findAll();
         if(list.isEmpty()){
             log.info("Não há nenhum audio cadastrado no banco de dados");
             return;
@@ -59,7 +59,7 @@ public class ExpirationAudioUrlJob {
                     sound.setAudioUrl(signedUrl.toString());
                     sound.setCreationDateAudioTokenUrl(creationDateAudioUrlToken);
                     sound.setExpirationDateAudioTokenUrl(expirationDateAudioUrlToken);
-                    soundTesteFirebaseRepository.save(sound);
+                    soundRepository.save(sound);
                     log.info("Audio {} atualizado com sucesso!", sound.getName());
                 } catch (IOException e) {
                     log.error("Erro ao criar nova url de referencia para o audio {}", sound.getName());

@@ -26,14 +26,19 @@ public class Sound implements Serializable{
 
     @Id
     private String id;
+
     private String name;
-    private SoundType soundType;
-    private Integer duration;
-    private Set<CategoryDTO> categories = new HashSet<>();
-    private byte[] audio;
-    private byte[] image;
+    private String audioUrl;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime creationDate;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime lastUpdatedDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
+    private LocalDateTime creationDateAudioTokenUrl;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
+    private LocalDateTime expirationDateAudioTokenUrl;
+
+    private SoundType soundType;
 }

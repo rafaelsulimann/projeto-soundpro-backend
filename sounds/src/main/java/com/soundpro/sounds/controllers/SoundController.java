@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.soundpro.sounds.dtos.SoundTesteFirebaseDTO;
+import com.soundpro.sounds.dtos.SoundDTO;
 import com.soundpro.sounds.services.SoundService;
 
 import lombok.extern.log4j.Log4j2;
@@ -33,28 +33,15 @@ public class SoundController {
     private SoundService soundService;
 
     @GetMapping
-    public ResponseEntity<Page<SoundTesteFirebaseDTO>> findAll(
+    public ResponseEntity<Page<SoundDTO>> findAll(
             @PageableDefault(page = 0, size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
         return ResponseEntity.status(HttpStatus.OK).body(soundService.findAll(pageable));
     }
 
-    //@PostMapping
-    //public ResponseEntity<SoundDTO> insertSound(@RequestBody SoundDTO soundDTO) {
-    //log.debug("POST insertSound soundDTO received", soundDTO.toString());
-    //return
-    //ResponseEntity.status(HttpStatus.CREATED).body(soundService.insertSound(soundDTO));
-    //}
-    //@PostMapping
-    //public ResponseEntity<SoundTesteFirebaseDTO> insertSound(@RequestBody SoundTesteFirebaseDTO soundDTO) {
-    //log.debug("POST insertSound soundDTO received", soundDTO.toString());
-    //return
-    //ResponseEntity.status(HttpStatus.CREATED).body(soundService.insertSound3(soundDTO));
-    //}
-
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @CrossOrigin(origins = "", allowedHeaders = "")
-    public ResponseEntity<SoundTesteFirebaseDTO> insertSound(@RequestPart("name") String name, @RequestPart("audio") MultipartFile audio) throws IOException {
-        return ResponseEntity.status(HttpStatus.CREATED).body(soundService.insertSound4(name, audio));
+    public ResponseEntity<SoundDTO> insertSound(@RequestPart("name") String name, @RequestPart("audio") MultipartFile audio) throws IOException {
+        return ResponseEntity.status(HttpStatus.CREATED).body(soundService.insert(name, audio));
     }
 
 }

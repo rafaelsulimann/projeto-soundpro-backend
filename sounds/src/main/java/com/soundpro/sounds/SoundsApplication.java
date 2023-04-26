@@ -8,8 +8,6 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import com.soundpro.sounds.repositories.SoundRepository;
-import com.soundpro.sounds.repositories.SoundTesteFirebaseRepository;
-import com.soundpro.sounds.repositories.SoundTesteRepository;
 
 @SpringBootApplication
 @EnableEurekaClient
@@ -17,13 +15,7 @@ import com.soundpro.sounds.repositories.SoundTesteRepository;
 public class SoundsApplication implements CommandLineRunner{
 
 	@Autowired
-	private SoundTesteRepository soundTesteRepository;
-
-	@Autowired
 	private SoundRepository soundRepository;
-
-	@Autowired
-	private SoundTesteFirebaseRepository soundTesteFirebaseRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(SoundsApplication.class, args);
@@ -31,9 +23,7 @@ public class SoundsApplication implements CommandLineRunner{
 
 	@Override
 	public void run(String... args) throws Exception {
-		soundTesteRepository.deleteAll();
 		soundRepository.deleteAll();
-		soundTesteFirebaseRepository.deleteAll();
 	}
 
 }

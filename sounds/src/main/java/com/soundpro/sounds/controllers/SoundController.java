@@ -1,7 +1,5 @@
 package com.soundpro.sounds.controllers;
 
-import java.io.IOException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,9 +19,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.soundpro.sounds.dtos.SoundDTO;
 import com.soundpro.sounds.services.SoundService;
 
-import lombok.extern.log4j.Log4j2;
-
-@Log4j2
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RequestMapping(value = "/sounds")
@@ -39,8 +34,7 @@ public class SoundController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @CrossOrigin(origins = "", allowedHeaders = "")
-    public ResponseEntity<SoundDTO> insertSound(@RequestPart("name") String name, @RequestPart("audio") MultipartFile audio) throws IOException {
+    public ResponseEntity<SoundDTO> insertSound(@RequestPart("name") String name, @RequestPart("audio") MultipartFile audio) {
         return ResponseEntity.status(HttpStatus.CREATED).body(soundService.insert(name, audio));
     }
 

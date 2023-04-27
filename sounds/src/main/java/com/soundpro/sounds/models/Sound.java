@@ -2,14 +2,11 @@ package com.soundpro.sounds.models;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.soundpro.sounds.dtos.CategoryDTO;
 import com.soundpro.sounds.enums.SoundType;
 
 import lombok.AllArgsConstructor;

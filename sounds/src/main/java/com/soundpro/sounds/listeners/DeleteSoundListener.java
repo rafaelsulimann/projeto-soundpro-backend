@@ -20,9 +20,9 @@ public class DeleteSoundListener {
     @Autowired
     private FirebaseStorageService firebaseStorageService;
 
-    //@KafkaListener(topics = "sound-delete-firebase", groupId = "sound-delete-firebase-group")
-    //public void listen(String message, ConsumerRecordMetadata metadata){
-    //    log.info("Topic {}, Pt {}, Offset {} : {}", metadata.topic(), metadata.partition(), metadata.offset(), message);
-    //    log.info("Timestamp {}", LocalDateTime.ofInstant(Instant.ofEpochMilli(metadata.timestamp()), TimeZone.getDefault().toZoneId()));
-    //}                                                                                   
+    @KafkaListener(topics = "sound-delete-firebase", groupId = "sound-delete-firebase-group")
+    public void listen(String message, ConsumerRecordMetadata metadata){
+        log.info("Topic {}, Pt {}, Offset {} : {}", metadata.topic(), metadata.partition(), metadata.offset(), message);
+        log.info("Timestamp {}", LocalDateTime.ofInstant(Instant.ofEpochMilli(metadata.timestamp()), TimeZone.getDefault().toZoneId()));
+    }                                                                                   
 }

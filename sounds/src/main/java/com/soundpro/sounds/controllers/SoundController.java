@@ -34,8 +34,8 @@ public class SoundController {
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<SoundDTO> insertSound(@RequestPart("name") String name, @RequestPart("audio") MultipartFile audio) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(soundService.insert(name, audio));
+    public ResponseEntity<SoundDTO> insertSound(@RequestPart("audio") MultipartFile audio) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(soundService.insert(audio));
     }
 
 }

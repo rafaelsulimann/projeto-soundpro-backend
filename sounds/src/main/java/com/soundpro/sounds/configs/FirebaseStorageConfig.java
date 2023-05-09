@@ -13,7 +13,7 @@ import com.google.cloud.storage.StorageOptions;
 
 @Configuration
 public class FirebaseStorageConfig {
-    
+
     @Value("${soundpro.firebase.storage.projectId}")
     private String projectId;
 
@@ -24,12 +24,7 @@ public class FirebaseStorageConfig {
     private String filePath;
 
     @Bean
-    public Storage storage() throws IOException {
-        return storageOptions().getService();
-    }
-
-    @Bean
-    public GoogleCredentials credentials() throws IOException{
+    public GoogleCredentials credentials() throws IOException {
         ClassPathResource resource = new ClassPathResource(filePath);
         GoogleCredentials credentials = GoogleCredentials.fromStream(resource.getInputStream());
         return credentials;
@@ -42,6 +37,11 @@ public class FirebaseStorageConfig {
                 .setCredentials(credentials())
                 .build();
         return storageOptions;
+    }
+
+    @Bean
+    public Storage storage() throws IOException {
+        return storageOptions().getService();
     }
 
 }

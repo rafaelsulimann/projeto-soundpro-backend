@@ -27,12 +27,8 @@ public class SoundDTO implements Serializable{
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
     private LocalDateTime lastUpdatedDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
-    private LocalDateTime creationDateAudioTokenUrl;
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
-    private LocalDateTime expirationDateAudioTokenUrl;
-
     private SoundType soundType;
+    private Boolean liked;
 
     public SoundDTO(Sound entity){
         id = entity.getId();
@@ -40,14 +36,12 @@ public class SoundDTO implements Serializable{
         audioUrl = entity.getAudioUrl();
         creationDate = entity.getCreationDate();
         lastUpdatedDate = entity.getLastUpdatedDate();
-        creationDateAudioTokenUrl = entity.getCreationDateAudioTokenUrl();
-        expirationDateAudioTokenUrl = entity.getExpirationDateAudioTokenUrl();
         soundType = entity.getSoundType();
+        liked = entity.getLiked();
     }
 
-    public Sound convertToEntity(SoundDTO dto){
-        return new Sound(null, dto.getName(), dto.getAudioUrl(), dto.getCreationDate(), dto.getLastUpdatedDate(),dto.getCreationDateAudioTokenUrl(), dto.getExpirationDateAudioTokenUrl(), dto.getSoundType());
+    public Sound convertToEntity(SoundDTO dto, FirebaseAudioDTO firebaseAudioDTO){
+        return new Sound(null, dto.getName(), dto.getAudioUrl(), dto.getCreationDate(), dto.getLastUpdatedDate(), firebaseAudioDTO.getCreationDateAudioUrlToken(), firebaseAudioDTO.getExpirationDateAudioUrlToken(), dto.getSoundType(), dto.getLiked());
     }
-
     
 }

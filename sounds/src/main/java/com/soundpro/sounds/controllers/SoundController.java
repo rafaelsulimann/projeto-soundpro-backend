@@ -9,7 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -30,12 +32,18 @@ public class SoundController {
     @GetMapping
     public ResponseEntity<Page<SoundDTO>> findAll(
             @PageableDefault(page = 0, size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(soundService.findAll(pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(this.soundService.findAll(pageable));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<SoundDTO> insertSound(@RequestPart("audio") MultipartFile audio) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(soundService.insert(audio));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.soundService.insert(audio));
+    }
+
+    @DeleteMapping(value = "/{soundId}")
+    public ResponseEntity<Object> deleteSound(@PathVariable String soundId){
+        this.soundService.delete(soundId);
+        return ResponseEntity.status(HttpStatus.OK).body("Sound deletado com sucesso");
     }
 
 }

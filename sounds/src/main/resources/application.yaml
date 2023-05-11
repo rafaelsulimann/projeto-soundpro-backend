@@ -1,22 +1,72 @@
 #COM CONFIG SERVER
+#spring:
+#  application:
+#    name: soundpro-sound-service
+#  config:
+#    import: 'configserver:'
+#  cloud:
+#    config:
+#      discovery:
+#        serviceId: ${configServer.serviceId}
+#      username: ${configServer.username}
+#      password: ${configServer.password}
+#      uri: 'http://${configServer.username}:${configServer.password}@${configServer.host}:8888'
+#
+#configServer:
+#  serviceId: ${SPRING_CLOUD_CONFIG_DISCOVERY_SERVICE_ID:config-server}
+#  username: ${CONFIG_SERVER_USERNAME:configserver}
+#  password: ${CONFIG_SERVER_PASSWORD:1234567}
+#  host: ${CONFIG_SERVER_HOST:localhost}
+#
+#SEM CONFIG SERVER
+server:
+  port: 8081
+  servlet:
+    context-path: '/soundpro-sound/'
+
 spring:
+  servlet:
+    multipart:
+      max-file-size: 16MB
+      max-request-size: 16MB
   application:
     name: soundpro-sound-service
-  config:
-    import: 'configserver:'
-  cloud:
-    config:
-      discovery:
-        serviceId: ${configServer.serviceId}
-      username: ${configServer.username}
-      password: ${configServer.password}
-      uri: 'http://${configServer.username}:${configServer.password}@${configServer.host}:8888'
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/soundpro
+  kafka:
+    bootstrap-servers: 'localhost:29092'
+  output:
+    ansi:
+      enabled: always
 
-configServer:
-  serviceId: ${SPRING_CLOUD_CONFIG_DISCOVERY_SERVICE_ID:config-server}
-  username: ${CONFIG_SERVER_USERNAME:configserver}
-  password: ${CONFIG_SERVER_PASSWORD:1234567}
-  host: ${CONFIG_SERVER_HOST:localhost}
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: 'http://${serviceRegistry.username}:${serviceRegistry.password}@localhost:8761/eureka'
+#  instance:
+#    hostname: ${serviceRegistry.defaultZoneHost}
+#  
+#serviceRegistry:
+#  username: ${SERVICE_REGISTRY_USERNAME:serviceregistry}
+#  password: ${SERVICE_REGISTRY_PASSWORD:1234567}
+#  defaultZoneHost: ${EUREKA_CLIENT_SERVICE_URL_DEFAULT_ZONE:host.docker.internal}
 
+logging: 
+  level: 
+    com:
+      ead: TRACE 
+    root: INFO 
+    org:
+      springframework:
+        web: DEBUG 
+      hibernate: INFO 
+
+soundpro:
+  firebase:
+    storage:
+      projectId: sound-pro-fa447
+      bucket: sound-pro-fa447.appspot.com
+      filePath: sound-pro-fa447-firebase-adminsdk-hu6cy-683cd0a6eb.json
 
       

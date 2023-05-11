@@ -45,9 +45,9 @@ public class ExpirationAudioUrlJob {
             if (expirationDate.isBefore(validationDate)) {
                 log.info("O Url de referencia do audio {} vai expirar em menos de um dia, criando nova url",
                         sound.getName());
-                FirebaseAudioDTO newSignedUrl = firebaseStorageService.updateSoundSignedUrl(sound.getName());
-                this.updateSoundSignedUrl(sound, newSignedUrl);
-                soundRepository.save(sound);
+                FirebaseAudioDTO newSignedUrl = this.firebaseStorageService.updateSoundSignedUrl(sound.getName());
+                this.updateSignedUrlInEntity(sound, newSignedUrl);
+                this.soundRepository.save(sound);
                 log.info("Audio {} atualizado com sucesso!", sound.getName());
             }
         });
@@ -55,7 +55,7 @@ public class ExpirationAudioUrlJob {
         log.info("Finalizando ExpirationAudioUrlJob!");
     }
 
-    private void updateSoundSignedUrl(Sound sound, FirebaseAudioDTO newSignedUrl){
+    private void updateSignedUrlInEntity(Sound sound, FirebaseAudioDTO newSignedUrl){
         sound.setAudioUrl(newSignedUrl.getSignedUrl());
         sound.setCreationDateAudioTokenUrl(newSignedUrl.getCreationDateAudioUrlToken());
         sound.setExpirationDateAudioTokenUrl(newSignedUrl.getExpirationDateAudioUrlToken());

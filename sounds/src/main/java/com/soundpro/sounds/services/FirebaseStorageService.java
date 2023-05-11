@@ -62,8 +62,17 @@ public class FirebaseStorageService {
             LocalDateTime expirationDateAudioUrlToken = creationDateAudioUrlToken.plusDays(7);
             return new FirebaseAudioDTO(signedUrl.toString(), creationDateAudioUrlToken, expirationDateAudioUrlToken);
         } catch (IOException e) {
-            log.error("Erro ao criar nova url de referencia para o audio {}", audioName);
+            log.error("Erro ao criar nova url de referencia para o audio {}: Error: {}", audioName, e.toString());
             throw new FirebaseStorageException("Error ao validar audio e salvar no Firebase Storage");
+        }
+    }
+
+    public void deleteSound(String soundName){
+        try {
+            log.info("Deletando sound {} do firebase storage", soundName);
+            firebaseStorageConfig.storage().delete(BlobId.of(bucketName, soundName));
+        } catch (IOException e) {
+            log.error("Erro ao deletar sound {} do firebase storage: Error: {}", soundName, e.toString());
         }
     }
 

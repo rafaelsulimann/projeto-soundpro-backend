@@ -26,7 +26,7 @@ public class ProducerKafkaConfig {
         var configs = new HashMap<String, Object>();
         configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
-        configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
+        configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         return new DefaultKafkaProducerFactory<>(configs);
     }
 
@@ -44,7 +44,9 @@ public class ProducerKafkaConfig {
 
     @Bean
     public KafkaAdmin.NewTopics topics() {
-        return new KafkaAdmin.NewTopics(TopicBuilder.name("sound-firebase-delete").partitions(2).replicas(1).build());
+        return new KafkaAdmin.NewTopics(
+                                TopicBuilder.name("delete-sound-firebase").partitions(2).replicas(1).build()
+                                );
     }
     
 }

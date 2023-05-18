@@ -39,9 +39,5 @@ public class SoundDTO implements Serializable{
         soundType = entity.getSoundType();
         liked = entity.getLiked();
     }
-
-    public Sound convertToEntity(SoundDTO dto, FirebaseAudioDTO firebaseAudioDTO){
-        return new Sound(null, dto.getName(), dto.getAudioUrl(), dto.getCreationDate(), dto.getLastUpdatedDate(), firebaseAudioDTO.getCreationDateAudioUrlToken(), firebaseAudioDTO.getExpirationDateAudioUrlToken(), dto.getSoundType(), dto.getLiked());
-    }
     
 }

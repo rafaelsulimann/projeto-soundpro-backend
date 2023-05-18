@@ -15,6 +15,8 @@ import org.springframework.kafka.core.KafkaAdmin;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 
+import com.soundpro.sounds.constants.KafkaTopic;
+
 @Configuration
 public class ProducerKafkaConfig {
 
@@ -24,7 +26,7 @@ public class ProducerKafkaConfig {
     @Bean
     public ProducerFactory<String, String> producerFacetory(){
         var configs = new HashMap<String, Object>();
-        configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+        configs.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaProperties.getBootstrapServers());
         configs.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configs.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         return new DefaultKafkaProducerFactory<>(configs);
@@ -32,20 +34,20 @@ public class ProducerKafkaConfig {
 
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate(){
-        return new KafkaTemplate<>(producerFacetory());
+        return new KafkaTemplate<>(this.producerFacetory());
     }
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
         var configs = new HashMap<String, Object>();
-        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaProperties.getBootstrapServers());
+        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, this.kafkaProperties.getBootstrapServers());
         return new KafkaAdmin(configs);
     }
 
     @Bean
     public KafkaAdmin.NewTopics topics() {
         return new KafkaAdmin.NewTopics(
-                                TopicBuilder.name("delete-sound-firebase").partitions(2).replicas(1).build()
+                                TopicBuilder.name(KafkaTopic.DELETE_SOUND_FIREBASE).partitions(2).replicas(1).build()
                                 );
     }
     

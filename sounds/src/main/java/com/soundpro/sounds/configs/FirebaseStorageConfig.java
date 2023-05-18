@@ -17,15 +17,12 @@ public class FirebaseStorageConfig {
     @Value("${soundpro.firebase.storage.projectId}")
     private String projectId;
 
-    @Value("${soundpro.firebase.storage.bucket}")
-    private String bucketName;
-
     @Value("${soundpro.firebase.storage.filePath}")
     private String filePath;
 
     @Bean
     public GoogleCredentials credentials() throws IOException {
-        ClassPathResource resource = new ClassPathResource(filePath);
+        ClassPathResource resource = new ClassPathResource(this.filePath);
         GoogleCredentials credentials = GoogleCredentials.fromStream(resource.getInputStream());
         return credentials;
     }
@@ -33,15 +30,15 @@ public class FirebaseStorageConfig {
     @Bean
     public StorageOptions storageOptions() throws IOException {
         StorageOptions storageOptions = StorageOptions.newBuilder()
-                .setProjectId(projectId)
-                .setCredentials(credentials())
+                .setProjectId(this.projectId)
+                .setCredentials(this.credentials())
                 .build();
         return storageOptions;
     }
 
     @Bean
     public Storage storage() throws IOException {
-        return storageOptions().getService();
+        return this.storageOptions().getService();
     }
 
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.soundpro.sounds.constants.KafkaTopic;
+import com.soundpro.sounds.dtos.DownloadSoundDTO;
 import com.soundpro.sounds.dtos.FirebaseAudioDTO;
 import com.soundpro.sounds.dtos.SoundDTO;
 import com.soundpro.sounds.dtos.SoundUpdateRequestDTO;
@@ -105,6 +106,12 @@ public class SoundService extends AbstractService{
             e.printStackTrace();
             return null;
         }
+    }
+
+    public DownloadSoundDTO findSoundBytesByName(String soundId){
+        Sound entity = this.findSoundById(soundId);
+        byte[] audioContent = this.firebaseStorageService.getSoundBytesByName(entity.getName());
+        return new DownloadSoundDTO(entity.getName(), audioContent);
     }
 
     private Sound findSoundById(String soundId){

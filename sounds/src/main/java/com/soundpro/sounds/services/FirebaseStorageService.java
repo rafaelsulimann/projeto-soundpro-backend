@@ -56,8 +56,7 @@ public class FirebaseStorageService {
 
     public FirebaseAudioDTO createNewSignedUrl(String audioName) {
         try {
-            BlobId blobId = BlobId.of(this.bucketName, audioName);
-            Blob blob = this.firebaseStorageConfig.storage().get(blobId);
+            Blob blob = this.findSoundByName(audioName);
             URL signedUrl = blob.signUrl(7, TimeUnit.DAYS);
             log.info("Nova url de referencia criada para o audio {}, url: {}", audioName, signedUrl.toString());
             LocalDateTime creationDateAudioUrlToken = LocalDateTime.now(ZoneId.of("UTC"));
@@ -73,7 +72,7 @@ public class FirebaseStorageService {
     public void deleteSound(String soundName){
         try {
             log.info("Deletando sound {} do firebase storage", soundName);
-            this.firebaseStorageConfig.storage().delete(BlobId.of(this.bucketName, soundName));
+            this.firebaseStorageConfig.storage().delete(this.findSoundByName(soundName).getBlobId());
         } catch (IOException e) {
             log.error("Erro ao deletar sound {} do firebase storage: Error: {}", soundName, e.toString());
             e.printStackTrace();
@@ -83,12 +82,11 @@ public class FirebaseStorageService {
     
     public FirebaseAudioDTO updateSound(UpdateSoundFirebaseDTO updateSoundFirebaseDTO) {
         try {
-            BlobId blobId = BlobId.of(this.bucketName, updateSoundFirebaseDTO.getOriginalSoundName());
-            Blob blob = this.firebaseStorageConfig.storage().get(blobId);
+            Blob blob = this.findSoundByName(updateSoundFirebaseDTO.getOriginalSoundName());
             log.info("Atualizando o nome do sound {} para {}", updateSoundFirebaseDTO.getOriginalSoundName(), updateSoundFirebaseDTO.getNewSoundName());
             blob.copyTo(BlobId.of(this.bucketName, updateSoundFirebaseDTO.getNewSoundName()));
             log.info("Deletando sound com nome antigo {} do firebase storage", updateSoundFirebaseDTO.getOriginalSoundName());
-            this.firebaseStorageConfig.storage().delete(blobId);
+            this.firebaseStorageConfig.storage().delete(blob.getBlobId());
             return this.createNewSignedUrl(updateSoundFirebaseDTO.getNewSoundName());
         } catch (IOException e) {
             log.error("Erro ao atualizar o nome do sound {} para {} do firebase storage: Error: {}", updateSoundFirebaseDTO.getOriginalSoundName(), updateSoundFirebaseDTO.getNewSoundName(), e.toString());
@@ -96,6 +94,23 @@ public class FirebaseStorageService {
             throw new FirebaseStorageException("Error ao atualizar sound do Firebase Storage");
         }
 
+    }
+
+    public byte[] getSoundBytesByName(String soundName){
+        try {
+            Blob blob = this.findSoundByName(soundName);
+            return blob.getContent();
+        } catch (IOException e) {
+            log.error("Erro ao obter sound {} do firebase storage", soundName);
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private Blob findSoundByName(String soundName) throws IOException{
+        log.info("Buscando sound {} no firebase storage", soundName);
+        BlobId blobId = BlobId.of(this.bucketName, soundName);
+        return this.firebaseStorageConfig.storage().get(blobId);
     }
 
 }

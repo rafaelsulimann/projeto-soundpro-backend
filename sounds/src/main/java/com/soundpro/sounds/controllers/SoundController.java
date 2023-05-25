@@ -1,12 +1,17 @@
 package com.soundpro.sounds.controllers;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.firebase.database.annotations.NotNull;
+import com.soundpro.sounds.dtos.DownloadSoundDTO;
 import com.soundpro.sounds.dtos.SoundDTO;
 import com.soundpro.sounds.dtos.SoundUpdateRequestDTO;
 import com.soundpro.sounds.services.SoundService;
@@ -55,6 +61,15 @@ public class SoundController {
     @PutMapping(value = "/{soundId}")
     public ResponseEntity<SoundDTO> updateSound(@PathVariable String soundId, @RequestBody @Valid SoundUpdateRequestDTO soundUpdateRequestDTO){
         return ResponseEntity.status(HttpStatus.OK).body(this.soundService.update(soundId, soundUpdateRequestDTO));
+    }
+
+    @GetMapping(value = "/download/{soundId}")
+    public ResponseEntity<InputStreamResource> downloadSound(@PathVariable String soundId){
+        DownloadSoundDTO downloadDTO = this.soundService.findSoundBytesByName(soundId);
+        InputStream inputStream = new ByteArrayInputStream(downloadDTO.getAudioContent());
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + downloadDTO.getSoundName());
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).contentType(MediaType.APPLICATION_OCTET_STREAM).body(new InputStreamResource(inputStream));
     }
 
 }

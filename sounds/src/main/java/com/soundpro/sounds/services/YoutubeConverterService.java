@@ -21,50 +21,31 @@ public class YoutubeConverterService {
         try {
             String comando1 = "/usr/bin/python3.8";
             String comando2 = "/usr/local/bin/youtube-dlc";
-            String[] argumentos1 = { comando1, comando2, "--verbose", "--format", "bestvideo+bestaudio",
-                    "--merge-output-format", "mkv", youtubeVideoUrl };
-
+            String[] argumentos1 = { comando1, comando2, "--verbose", "--format", "bestvideo+bestaudio", "--merge-output-format", "mkv", youtubeVideoUrl };
             String nomeVideoSemExtensao = executarComando(argumentos1);
 
             if (nomeVideoSemExtensao != null) {
                 String parametroV = youtubeVideoUrl.substring(youtubeVideoUrl.indexOf("?v=") + 3);
                 String nomeVideoSemExtensaoESemId = nomeVideoSemExtensao.replace("-" + parametroV, "");
                 String comando3 = "/usr/bin/ffmpeg";
-                String caminhoVideo = System.getProperty("user.dir") + "/"
-                        + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv";
-                String[] argumentos2 = { comando3, "-i", caminhoVideo, "-vn", "-c:a", "libmp3lame", "-b:a", "320k",
-                        nomeVideoSemExtensaoESemId.substring(1, nomeVideoSemExtensaoESemId.length() - 1) + ".mp3" };
+                String caminhoVideo = System.getProperty("user.dir") + "/" + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv";
+                String[] argumentos2 = { comando3, "-i", caminhoVideo, "-vn", "-c:a", "libmp3lame", "-b:a", "320k", nomeVideoSemExtensaoESemId.substring(1, nomeVideoSemExtensaoESemId.length() - 1) + ".mp3" };
                 executarComando(argumentos2);
 
                 File arquivoVideo = new File(caminhoVideo);
                 if (arquivoVideo.exists()) {
                     boolean deletado = arquivoVideo.delete();
                     if (deletado) {
-                        System.out.println(
-                                "Arquivo de vídeo "
-                                        + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1)
-                                        + ".mkv deletado com sucesso.");
+                        System.out.println("Arquivo de vídeo " + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv deletado com sucesso.");
                     } else {
-                        System.out.println("Falha ao deletar o arquivo de vídeo "
-                                + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv");
+                        System.out.println("Falha ao deletar o arquivo de vídeo " + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv");
                     }
                 }
-                String caminhoMp3 = System.getProperty("user.dir") + "/"
-                        + nomeVideoSemExtensaoESemId.substring(1, nomeVideoSemExtensaoESemId.length() - 1) + ".mp3";
+                String caminhoMp3 = System.getProperty("user.dir") + "/" + nomeVideoSemExtensaoESemId.substring(1, nomeVideoSemExtensaoESemId.length() - 1) + ".mp3";
                 File arquivoMP3 = new File(caminhoMp3);
                 if (arquivoMP3.exists()) {
                     MultipartFile multipartFileMp3 = this.convertToMultipartFile(arquivoMP3);
-                    //boolean deletado = arquivoMP3.delete();
-                    //if (deletado) {
-                    //    System.out.println("Arquivo mp3 "
-                    //            + nomeVideoSemExtensaoESemId.substring(1, nomeVideoSemExtensaoESemId.length() - 1)
-                    //            + ".mp3 deletado com sucesso.");
-                        return multipartFileMp3;
-                    //} else {
-                    //    System.out.println("Falha ao deletar o arquivo de vídeo "
-                    //            + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv");
-                    //    return null;
-                    //}
+                    return multipartFileMp3;
                 }
             }
             return null;
@@ -121,7 +102,7 @@ public class YoutubeConverterService {
         return null;
     }
 
-    public static class LeitorOutput implements Runnable {
+    private static class LeitorOutput implements Runnable {
         private final InputStream inputStream;
         private final StringBuilder saida;
 
@@ -148,7 +129,7 @@ public class YoutubeConverterService {
         }
     }
 
-    public MultipartFile convertToMultipartFile(File file) throws IOException {
+    private MultipartFile convertToMultipartFile(File file) throws IOException {
         return new MultipartFile() {
             @Override
             public String getName() {

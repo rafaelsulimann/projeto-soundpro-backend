@@ -69,7 +69,7 @@ public class SoundController {
         DownloadSoundDTO downloadDTO = this.soundService.findSoundBytesByName(soundId);
         InputStream inputStream = new ByteArrayInputStream(downloadDTO.getAudioContent());
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + downloadDTO.getSoundName());
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + downloadDTO.getSoundName() + "\"");
         return ResponseEntity.status(HttpStatus.OK).headers(headers).contentType(MediaType.APPLICATION_OCTET_STREAM).body(new InputStreamResource(inputStream));
     }
 

@@ -1,5 +1,6 @@
 package com.soundpro.sounds.services;
 
+import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -117,6 +118,18 @@ public class SoundService extends AbstractService{
         byte[] audioContent = this.firebaseStorageService.getSoundBytesByName(entity.getName());
         return new DownloadSoundDTO(entity.getName(), audioContent);
     }
+    
+    public SoundDTO insertWithYoutubeUrl(YoutubeConverterDTO youtubeConverterDTO) {
+        MultipartFile mp3File = this.youtubeConverterService.convertYoutubeVideoUrlToMp3MultipartFile(youtubeConverterDTO.getYoutubeVideoUrl());
+        SoundDTO entity = this.insert(mp3File);
+        boolean deletado = this.deleteMp3FileFromAplicationDirectory(mp3File);
+        if (deletado) {
+            System.out.println("Arquivo mp3 " + mp3File.getOriginalFilename() + "deletado com sucesso.");
+        } else {
+            System.out.println("Erro ao deletar arquivo mp3 " + mp3File.getOriginalFilename());
+        }
+        return entity;
+    }
 
     private Sound findSoundById(String soundId){
         return this.soundRepository.findById(soundId).orElseThrow(() -> new ResourceNotFoundException("Sound não encontrado"));
@@ -134,9 +147,13 @@ public class SoundService extends AbstractService{
         entity.setLastUpdatedDate(LocalDateTime.now(ZoneId.of("UTC")));
     }
 
-    public SoundDTO insertWithYoutubeUrl(YoutubeConverterDTO youtubeConverterDTO) {
-        MultipartFile mp3File = this.youtubeConverterService.convertYoutubeVideoUrlToMp3MultipartFile(youtubeConverterDTO.getYoutubeVideoUrl());
-        return this.insert(mp3File);
+    private boolean deleteMp3FileFromAplicationDirectory(MultipartFile mp3File){
+        String caminhoMp3 = System.getProperty("user.dir") + "/" + mp3File.getOriginalFilename();
+        File arquivoMP3 = new File(caminhoMp3);
+        if (arquivoMP3.exists()) {
+            return arquivoMP3.delete();
+        }
+        return false;
     }
 
 }

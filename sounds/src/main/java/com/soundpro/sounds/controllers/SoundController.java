@@ -31,6 +31,7 @@ import com.google.firebase.database.annotations.NotNull;
 import com.soundpro.sounds.dtos.DownloadSoundDTO;
 import com.soundpro.sounds.dtos.SoundDTO;
 import com.soundpro.sounds.dtos.SoundUpdateRequestDTO;
+import com.soundpro.sounds.dtos.YoutubeConverterDTO;
 import com.soundpro.sounds.services.SoundService;
 
 @RestController
@@ -70,6 +71,11 @@ public class SoundController {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + downloadDTO.getSoundName());
         return ResponseEntity.status(HttpStatus.OK).headers(headers).contentType(MediaType.APPLICATION_OCTET_STREAM).body(new InputStreamResource(inputStream));
+    }
+
+    @PostMapping(value = "/converter")
+    public ResponseEntity<SoundDTO> insrtSoundWithYoutubeUrl(@RequestBody @Valid YoutubeConverterDTO youtubeConverterDTO){
+        return ResponseEntity.status(HttpStatus.OK).body(this.soundService.insertWithYoutubeUrl(youtubeConverterDTO));
     }
 
 }

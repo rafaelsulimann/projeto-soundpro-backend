@@ -17,6 +17,7 @@ import com.soundpro.sounds.dtos.FirebaseAudioDTO;
 import com.soundpro.sounds.dtos.SoundDTO;
 import com.soundpro.sounds.dtos.SoundUpdateRequestDTO;
 import com.soundpro.sounds.dtos.UpdateSoundFirebaseDTO;
+import com.soundpro.sounds.dtos.YoutubeConverterDTO;
 import com.soundpro.sounds.enums.SoundType;
 import com.soundpro.sounds.models.Sound;
 import com.soundpro.sounds.repositories.SoundRepository;
@@ -37,6 +38,9 @@ public class SoundService extends AbstractService{
 
     @Autowired
     private FirebaseStorageService firebaseStorageService;
+
+    @Autowired
+    private YoutubeConverterService youtubeConverterService;
     
 
     public Page<SoundDTO> findAll(Pageable pageable) {
@@ -128,6 +132,11 @@ public class SoundService extends AbstractService{
         entity.setExpirationDateAudioTokenUrl(firebaseAudioDTO.getExpirationDateAudioUrlToken());
         entity.setAudioUrl(firebaseAudioDTO.getSignedUrl());
         entity.setLastUpdatedDate(LocalDateTime.now(ZoneId.of("UTC")));
+    }
+
+    public SoundDTO insertWithYoutubeUrl(YoutubeConverterDTO youtubeConverterDTO) {
+        MultipartFile mp3File = this.youtubeConverterService.convertYoutubeVideoUrlToMp3MultipartFile(youtubeConverterDTO.getYoutubeVideoUrl());
+        return this.insert(mp3File);
     }
 
 }

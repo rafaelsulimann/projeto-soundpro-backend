@@ -9,26 +9,32 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.util.regex.Pattern;
 
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.extern.log4j.Log4j2;
+
+@Log4j2
 @Service
 public class YoutubeConverterService {
 
     public MultipartFile convertYoutubeVideoUrlToMp3MultipartFile(String youtubeVideoUrl) {
         try {
             String comando1 = "/usr/bin/python3.8";
-            String comando2 = "/usr/local/bin/youtube-dlc";
-            String[] argumentos1 = { comando1, comando2, "--verbose", "--format", "bestvideo+bestaudio", "--merge-output-format", "mkv", youtubeVideoUrl };
+            String comando2 = "/usr/local/bin/youtube-dl";
+            String pathPastaYoutubeVideosEFormatoNomeVideo = "~/youtube-videos/%(title)s.%(ext)s";
+            String[] argumentos1 = { comando1, comando2, "--verbose", "--format", "bestvideo+bestaudio", "--merge-output-format", "mkv", "-o", pathPastaYoutubeVideosEFormatoNomeVideo, youtubeVideoUrl };
             String nomeVideoSemExtensao = executarComando(argumentos1);
 
             if (nomeVideoSemExtensao != null) {
                 String parametroV = youtubeVideoUrl.substring(youtubeVideoUrl.indexOf("?v=") + 3);
                 String nomeVideoSemExtensaoESemId = nomeVideoSemExtensao.replace("-" + parametroV, "");
                 String comando3 = "/usr/bin/ffmpeg";
-                String caminhoVideo = System.getProperty("user.dir") + "/" + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv";
+                String caminhoVideo = nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv";
+                System.out.println(caminhoVideo);
                 String[] argumentos2 = { comando3, "-i", caminhoVideo, "-vn", "-c:a", "libmp3lame", "-b:a", "320k", nomeVideoSemExtensaoESemId.substring(1, nomeVideoSemExtensaoESemId.length() - 1) + ".mp3" };
                 executarComando(argumentos2);
 
@@ -36,12 +42,12 @@ public class YoutubeConverterService {
                 if (arquivoVideo.exists()) {
                     boolean deletado = arquivoVideo.delete();
                     if (deletado) {
-                        System.out.println("Arquivo de vídeo " + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv deletado com sucesso.");
+                        log.info("Arquivo de vídeo " + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv deletado com sucesso.");
                     } else {
-                        System.out.println("Falha ao deletar o arquivo de vídeo " + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv");
+                        log.info("Falha ao deletar o arquivo de vídeo " + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv");
                     }
                 }
-                String caminhoMp3 = System.getProperty("user.dir") + "/" + nomeVideoSemExtensaoESemId.substring(1, nomeVideoSemExtensaoESemId.length() - 1) + ".mp3";
+                String caminhoMp3 = nomeVideoSemExtensaoESemId.substring(1, nomeVideoSemExtensaoESemId.length() - 1) + ".mp3";
                 File arquivoMP3 = new File(caminhoMp3);
                 if (arquivoMP3.exists()) {
                     MultipartFile multipartFileMp3 = this.convertToMultipartFile(arquivoMP3);
@@ -75,9 +81,9 @@ public class YoutubeConverterService {
 
         // Verifica se o processo terminou com sucesso
         if (resultado == 0) {
-            System.out.println("Comando executado com sucesso.");
+            log.info("Comando executado com sucesso.");
         } else {
-            System.out.println("Ocorreu um erro ao executar o comando.");
+            log.info("Ocorreu um erro ao executar o comando.");
         }
 
         // Obtém a saída do processo da classe LeitorOutput
@@ -115,9 +121,21 @@ public class YoutubeConverterService {
         public void run() {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
                 String linha;
+                String nomeVideo = "";
                 while ((linha = reader.readLine()) != null) {
-                    System.out.println(linha);
-                    saida.append(linha).append("\n");
+                    if(linha.startsWith("[download] Destination:")){
+                        String nomeVideoCompleto = linha.substring("[download] Destination:".length()).trim();
+                        String replaceAll = System.getProperty("user.home") + "/youtube-videos/";
+                        String regex = Pattern.quote(replaceAll);
+                        nomeVideo = nomeVideoCompleto.replaceAll(regex, "");
+                    }
+                    if(linha.startsWith("[download]") && !linha.startsWith("[download] Destination:")){
+                        log.info(nomeVideo + " - " + linha);
+                        saida.append(linha).append("\n");
+                    } else{
+                        log.info(linha);
+                        saida.append(linha).append("\n");
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();

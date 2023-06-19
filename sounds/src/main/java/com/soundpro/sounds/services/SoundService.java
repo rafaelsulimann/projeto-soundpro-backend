@@ -124,9 +124,9 @@ public class SoundService extends AbstractService{
         SoundDTO entity = this.insert(mp3File);
         boolean deletado = this.deleteMp3FileFromAplicationDirectory(mp3File);
         if (deletado) {
-            System.out.println("Arquivo mp3 " + mp3File.getOriginalFilename() + "deletado com sucesso.");
+            log.info("Arquivo mp3 {} deletado com sucesso.", mp3File.getOriginalFilename());
         } else {
-            System.out.println("Erro ao deletar arquivo mp3 " + mp3File.getOriginalFilename());
+            log.info("Erro ao deletar arquivo mp3 {}", mp3File.getOriginalFilename());
         }
         return entity;
     }
@@ -148,7 +148,7 @@ public class SoundService extends AbstractService{
     }
 
     private boolean deleteMp3FileFromAplicationDirectory(MultipartFile mp3File){
-        String caminhoMp3 = System.getProperty("user.dir") + "/" + mp3File.getOriginalFilename();
+        String caminhoMp3 = System.getProperty("user.home") + "/youtube-videos/" + mp3File.getOriginalFilename();
         File arquivoMP3 = new File(caminhoMp3);
         if (arquivoMP3.exists()) {
             return arquivoMP3.delete();

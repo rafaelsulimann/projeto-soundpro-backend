@@ -48,6 +48,10 @@ public class SoundService extends AbstractService{
         return this.soundRepository.findAll(pageable).map(sound -> new SoundDTO(sound));
     }
 
+    public Page<SoundDTO> findSoundByName(String name, Pageable pageable){
+        return this.soundRepository.findSoundByName(name, pageable).map(sound -> new SoundDTO(sound));
+    }
+
     public SoundDTO findById(String soundId){
         return new SoundDTO(this.findSoundById(soundId));
     }

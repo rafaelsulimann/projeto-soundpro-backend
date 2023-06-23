@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -43,9 +44,9 @@ public class SoundController {
     private SoundService soundService;
 
     @GetMapping
-    public ResponseEntity<Page<SoundDTO>> findAll(
+    public ResponseEntity<Page<SoundDTO>> findAll(@RequestParam(value = "name", defaultValue = "", required = false) String name,
             @PageableDefault(page = 0, size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(this.soundService.findAll(pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(this.soundService.findSoundByName(name, pageable));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

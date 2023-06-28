@@ -47,6 +47,8 @@ services:
       ZOOKEEPER_TICK_TIME: 2000
     ports:
       - 22181:2181
+    networks:
+      - dev-network
   kafka:
     container_name: kafka
     image: confluentinc/cp-kafka:latest
@@ -58,10 +60,27 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://kafka:29092
+      #KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-#networks:
-#  dev-network:
-#    driver: bridge
+    networks:
+      - dev-network
+  sounds:
+    image: sounds:v1
+    container_name: sounds
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      - KAFKA_NAME=kafka
+      - MONGODB_NAME=host.docker.internal
+    depends_on:
+      - kafka
+      - zookeeper
+    networks:
+      - dev-network
+networks:
+  dev-network:
+    driver: bridge

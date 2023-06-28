@@ -33,9 +33,9 @@ spring:
     name: soundpro-sound-service
   data:
     mongodb:
-      uri: mongodb://localhost:27017/soundpro
+      uri: mongodb://${soundpro.mongodb.name}:27017/soundpro
   kafka:
-    bootstrap-servers: 'localhost:29092'
+    bootstrap-servers: '${soundpro.kafka.name}:29092'
   output:
     ansi:
       enabled: always
@@ -68,5 +68,11 @@ soundpro:
       projectId: sound-pro-fa447
       bucket: sound-pro-fa447.appspot.com
       filePath: sound-pro-fa447-firebase-adminsdk-hu6cy-683cd0a6eb.json
+  kafka:
+    name: ${KAFKA_NAME:localhost}
+  mongodb:
+    name: ${MONGODB_NAME:localhost}
+
+
 
       

@@ -23,10 +23,11 @@ public class YoutubeConverterService {
 
     public MultipartFile convertYoutubeVideoUrlToMp3MultipartFile(String youtubeVideoUrl) {
         try {
-            String comando1 = "/usr/bin/python3.8";
+            String comando1 = "/usr/bin/python3";
             String comando2 = "/usr/local/bin/youtube-dl";
             String pathPastaYoutubeVideosEFormatoNomeVideo = "~/youtube-videos/%(title)s.%(ext)s";
-            String[] argumentos1 = { comando1, comando2, "--verbose", "--format", "bestvideo+bestaudio", "--merge-output-format", "mkv", "-o", pathPastaYoutubeVideosEFormatoNomeVideo, youtubeVideoUrl };
+            String[] argumentos1 = { comando1, comando2, "--verbose", "--format", "bestvideo+bestaudio",
+                    "--merge-output-format", "mkv", "-o", pathPastaYoutubeVideosEFormatoNomeVideo, youtubeVideoUrl };
             String nomeVideoSemExtensao = executarComando(argumentos1);
 
             if (nomeVideoSemExtensao != null) {
@@ -35,19 +36,24 @@ public class YoutubeConverterService {
                 String comando3 = "/usr/bin/ffmpeg";
                 String caminhoVideo = nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv";
                 System.out.println(caminhoVideo);
-                String[] argumentos2 = { comando3, "-i", caminhoVideo, "-vn", "-c:a", "libmp3lame", "-b:a", "320k", nomeVideoSemExtensaoESemId.substring(1, nomeVideoSemExtensaoESemId.length() - 1) + ".mp3" };
+                String[] argumentos2 = { comando3, "-i", caminhoVideo, "-vn", "-c:a", "libmp3lame", "-b:a", "320k",
+                        nomeVideoSemExtensaoESemId.substring(1, nomeVideoSemExtensaoESemId.length() - 1) + ".mp3" };
                 executarComando(argumentos2);
 
                 File arquivoVideo = new File(caminhoVideo);
                 if (arquivoVideo.exists()) {
                     boolean deletado = arquivoVideo.delete();
                     if (deletado) {
-                        log.info("Arquivo de vídeo " + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv deletado com sucesso.");
+                        log.info("Arquivo de vídeo "
+                                + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1)
+                                + ".mkv deletado com sucesso.");
                     } else {
-                        log.info("Falha ao deletar o arquivo de vídeo " + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv");
+                        log.info("Falha ao deletar o arquivo de vídeo "
+                                + nomeVideoSemExtensao.substring(1, nomeVideoSemExtensao.length() - 1) + ".mkv");
                     }
                 }
-                String caminhoMp3 = nomeVideoSemExtensaoESemId.substring(1, nomeVideoSemExtensaoESemId.length() - 1) + ".mp3";
+                String caminhoMp3 = nomeVideoSemExtensaoESemId.substring(1, nomeVideoSemExtensaoESemId.length() - 1)
+                        + ".mp3";
                 File arquivoMP3 = new File(caminhoMp3);
                 if (arquivoMP3.exists()) {
                     MultipartFile multipartFileMp3 = this.convertToMultipartFile(arquivoMP3);
@@ -123,16 +129,16 @@ public class YoutubeConverterService {
                 String linha;
                 String nomeVideo = "";
                 while ((linha = reader.readLine()) != null) {
-                    if(linha.startsWith("[download] Destination:")){
+                    if (linha.startsWith("[download] Destination:")) {
                         String nomeVideoCompleto = linha.substring("[download] Destination:".length()).trim();
                         String replaceAll = System.getProperty("user.home") + "/youtube-videos/";
                         String regex = Pattern.quote(replaceAll);
                         nomeVideo = nomeVideoCompleto.replaceAll(regex, "");
                     }
-                    if(linha.startsWith("[download]") && !linha.startsWith("[download] Destination:")){
+                    if (linha.startsWith("[download]") && !linha.startsWith("[download] Destination:")) {
                         log.info(nomeVideo + " - " + linha);
                         saida.append(linha).append("\n");
-                    } else{
+                    } else {
                         log.info(linha);
                         saida.append(linha).append("\n");
                     }

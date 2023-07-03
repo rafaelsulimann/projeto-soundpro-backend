@@ -59,12 +59,13 @@ public class SoundService extends AbstractService{
     public SoundDTO insert(MultipartFile audio) {
         try {
             String nameWithoutExtension = audio.getOriginalFilename().replaceAll("(?i)\\.(mp3|wav)$", "");
-            log.info("POST recebido, name: {}, audio: {}", nameWithoutExtension, audio);
-            FirebaseAudioDTO firebaseAudio = this.firebaseStorageService.insertAudio(nameWithoutExtension, audio.getBytes());
+            String nameWithFirstLetterUppercase = nameWithoutExtension.substring(0, 1).toUpperCase() + nameWithoutExtension.substring(1);
+            log.info("POST recebido, name: {}, audio: {}", nameWithFirstLetterUppercase, audio);
+            FirebaseAudioDTO firebaseAudio = this.firebaseStorageService.insertAudio(nameWithFirstLetterUppercase, audio.getBytes());
             LocalDateTime creationDate = LocalDateTime.now(ZoneId.of("UTC"));
             LocalDateTime lastUpdateDate = LocalDateTime.now(ZoneId.of("UTC"));
     
-            SoundDTO dto = new SoundDTO(null, nameWithoutExtension, firebaseAudio.getSignedUrl(), creationDate, lastUpdateDate,
+            SoundDTO dto = new SoundDTO(null, nameWithFirstLetterUppercase, firebaseAudio.getSignedUrl(), creationDate, lastUpdateDate,
                     audio.getOriginalFilename().toLowerCase().contains("mp3") ? SoundType.MP3 : SoundType.WAV, false);
     
             Sound entity = this.convertToEntity(dto, firebaseAudio);
@@ -93,11 +94,12 @@ public class SoundService extends AbstractService{
     public SoundDTO update(String soundId, SoundUpdateRequestDTO soundUpdateRequestDTO){
         try {
             Sound entity = this.findSoundById(soundId);
-            String newSoundName = soundUpdateRequestDTO.getSoundName();
+            String newSoundName = soundUpdateRequestDTO.getSoundName().substring(0, 1).toUpperCase() + soundUpdateRequestDTO.getSoundName().substring(1);
             String originalSoundName = entity.getName();
             if(originalSoundName != newSoundName){
                 FirebaseAudioDTO newFirebaseAudio = firebaseStorageService.updateSound(new UpdateSoundFirebaseDTO(originalSoundName, newSoundName));
                 log.info("Sound {} sendo atualizado para o nome {}", entity.getName(), newSoundName);
+                soundUpdateRequestDTO.setSoundName(newSoundName);
                 this.updateEntityWithNewFirebaseAudio(entity, soundUpdateRequestDTO, newFirebaseAudio);
                 log.info("Salvando Sound com o novo nome do banco de dados...");
                 this.soundRepository.save(entity);

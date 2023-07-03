@@ -3,7 +3,7 @@ WORKDIR /app
 COPY . .
 RUN mvn clean package
 
-FROM openjdk:17-slim-bullseye
+FROM openjdk:17-slim
 WORKDIR /app
 ENV KAFKA_NAME=localhost
 ENV MONGODB_NAME=localhost

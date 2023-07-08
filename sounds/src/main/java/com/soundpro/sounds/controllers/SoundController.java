@@ -44,9 +44,9 @@ public class SoundController {
     private SoundService soundService;
 
     @GetMapping
-    public ResponseEntity<Page<SoundDTO>> findAll(@RequestParam(value = "name", defaultValue = "", required = false) String name,
+    public ResponseEntity<Page<SoundDTO>> findAll(@RequestParam(value = "searchText", defaultValue = "", required = false) String searchText,
             @PageableDefault(page = 0, size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
-        return ResponseEntity.status(HttpStatus.OK).body(this.soundService.findSoundByName(name, pageable));
+        return ResponseEntity.status(HttpStatus.OK).body(this.soundService.findSoundByName(searchText, pageable));
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

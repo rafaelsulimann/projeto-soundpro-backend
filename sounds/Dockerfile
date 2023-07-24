@@ -6,7 +6,10 @@ RUN mvn clean package
 FROM openjdk:17-slim
 WORKDIR /app
 ENV KAFKA_NAME=localhost
+ENV KAFKA_PORT=29092
 ENV MONGODB_NAME=localhost
+ENV MONGODB_USERNAME=admin
+ENV MONGODB_PASSWORD=123456
 RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y curl python3 python3-pip ffmpeg git && \

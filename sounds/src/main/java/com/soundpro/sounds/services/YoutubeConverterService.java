@@ -26,7 +26,7 @@ public class YoutubeConverterService {
             String comando1 = "/usr/bin/python3";
             String comando2 = "/usr/local/bin/youtube-dl";
             String pathPastaYoutubeVideosEFormatoNomeVideo = "~/youtube-videos/%(title)s.%(ext)s";
-            String[] argumentos1 = { comando1, comando2, "--verbose", "--format", "bestvideo+bestaudio",
+            String[] argumentos1 = { comando1, comando2, "--verbose", "--no-check-certificate","--format", "bestvideo+bestaudio",
                     "--merge-output-format", "mkv", "-o", pathPastaYoutubeVideosEFormatoNomeVideo, youtubeVideoUrl };
             String nomeVideoSemExtensao = executarComando(argumentos1);
 

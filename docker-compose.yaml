@@ -67,6 +67,21 @@ services:
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     networks:
       - dev-network
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+      MONGO_INITDB_DATABASE: soundpro
+    ports:
+      - 27017:27017
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - ../mongo-data:/data/db
+    networks:
+      - dev-network
   sounds:
     image: rafaelsulimann/sounds:v6
     container_name: sounds
@@ -75,24 +90,27 @@ services:
       - 8081:8081
     environment:
       - KAFKA_NAME=kafka
-      - MONGODB_NAME=host.docker.internal
+      - MONGODB_NAME=mongodb
+      - MONGODB_USERNAME=admin
+      - MONGODB_PASSWORD=123456
     depends_on:
       - kafka
       - zookeeper
+      - mongodb
     networks:
       - dev-network
-  front:
-    image: rafaelsulimann/soundpro-front:v2
-    container_name: front
-    restart: always
-    ports:
-      - 5173:5173
-    depends_on:
-      - kafka
-      - zookeeper
-      - sounds
-    networks:
-      - dev-network
+  # front:
+  #   image: soundpro-front:v3
+  #   container_name: front
+  #   restart: always
+  #   ports:
+  #     - 5173:5173
+  #   depends_on:
+  #     - kafka
+  #     - zookeeper
+  #     - sounds
+  #   networks:
+  #     - dev-network
 networks:
   dev-network:
     driver: bridge

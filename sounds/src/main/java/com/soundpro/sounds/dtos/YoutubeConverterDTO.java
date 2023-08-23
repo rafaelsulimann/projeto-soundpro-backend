@@ -17,5 +17,8 @@ public class YoutubeConverterDTO implements Serializable{
 
     @NotBlank
     private String youtubeVideoUrl;
+
+    @NotBlank
+    private String requestId;
     
 }

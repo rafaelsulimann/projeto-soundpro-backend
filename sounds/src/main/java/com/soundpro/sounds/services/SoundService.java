@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.soundpro.sounds.constants.KafkaTopic;
 import com.soundpro.sounds.dtos.DownloadSoundDTO;
 import com.soundpro.sounds.dtos.FirebaseAudioDTO;
+import com.soundpro.sounds.dtos.LoadingFileDTO;
 import com.soundpro.sounds.dtos.SoundDTO;
 import com.soundpro.sounds.dtos.SoundUpdateRequestDTO;
 import com.soundpro.sounds.dtos.UpdateSoundFirebaseDTO;
@@ -33,6 +34,9 @@ public class SoundService extends AbstractService{
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
+
+    @Autowired
+    private WebSocketService webSocketService;
 
     @Autowired
     private SoundRepository soundRepository;
@@ -126,8 +130,14 @@ public class SoundService extends AbstractService{
     }
     
     public SoundDTO insertWithYoutubeUrl(YoutubeConverterDTO youtubeConverterDTO) {
-        MultipartFile mp3File = this.youtubeConverterService.convertYoutubeVideoUrlToMp3MultipartFile(youtubeConverterDTO.getYoutubeVideoUrl());
+        LoadingFileDTO loadingFileDTO = new LoadingFileDTO("Carregando", 0, 0);
+        this.webSocketService.sendMessage("/topic/progress/" + youtubeConverterDTO.getRequestId(), super.jsonMapper().toJson(loadingFileDTO));
+        MultipartFile mp3File = this.youtubeConverterService.convertYoutubeVideoUrlToMp3MultipartFile(youtubeConverterDTO, loadingFileDTO);
+        loadingFileDTO.setProgressPercentage(70);
+        this.webSocketService.sendMessage("/topic/progress/" + youtubeConverterDTO.getRequestId(), super.jsonMapper().toJson(loadingFileDTO));
         SoundDTO entity = this.insert(mp3File);
+        loadingFileDTO.setProgressPercentage(100);
+        this.webSocketService.sendMessage("/topic/progress/" + youtubeConverterDTO.getRequestId(), super.jsonMapper().toJson(loadingFileDTO));
         boolean deletado = this.deleteMp3FileFromAplicationDirectory(mp3File);
         if (deletado) {
             log.info("Arquivo mp3 {} deletado com sucesso.", mp3File.getOriginalFilename());

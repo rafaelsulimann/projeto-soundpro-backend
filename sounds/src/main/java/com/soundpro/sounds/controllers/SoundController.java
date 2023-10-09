@@ -79,4 +79,10 @@ public class SoundController {
         return ResponseEntity.status(HttpStatus.OK).body(this.soundService.insertWithYoutubeUrl(youtubeConverterDTO));
     }
 
+    @PostMapping(value = "/updateAudioUrl")
+    public ResponseEntity<Object> updateAudioUrl(){
+        this.soundService.updateExpirationAudioUrl();
+        return ResponseEntity.status(HttpStatus.OK).body("Audios url atualizados com sucesso");
+    }
+
 }

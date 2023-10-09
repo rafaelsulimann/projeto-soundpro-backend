@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -147,6 +148,31 @@ public class SoundService extends AbstractService{
         return entity;
     }
 
+    public void updateExpirationAudioUrl(){
+        List<Sound> list = this.soundRepository.findAll();
+
+        if (list.isEmpty()) {
+            log.info("Nao ha nenhum audio cadastrado no banco de dados");
+            return;
+        }
+
+        log.info("Verificando expiração de url de {} audios", list.size());
+
+        list.forEach(sound -> {
+            LocalDateTime expirationDate = sound.getExpirationDateAudioTokenUrl();
+            LocalDateTime validationDate = LocalDateTime.now(ZoneId.of("UTC")).plusMinutes(40);
+
+            if (expirationDate.isBefore(validationDate)) {
+                log.info("O Url de referencia do audio {} vai expirar em menos de um dia, criando nova url",
+                        sound.getName());
+                FirebaseAudioDTO newSignedUrl = this.firebaseStorageService.createNewSignedUrl(sound.getName());
+                this.updateNewSignedUrlInEntity(sound, newSignedUrl);
+                this.soundRepository.save(sound);
+                log.info("Audio {} atualizado com sucesso!", sound.getName());
+            }
+        });
+    }
+
     private Sound findSoundById(String soundId){
         return this.soundRepository.findById(soundId).orElseThrow(() -> new ResourceNotFoundException("Sound não encontrado"));
     }
@@ -170,6 +196,12 @@ public class SoundService extends AbstractService{
             return arquivoMP3.delete();
         }
         return false;
+    }
+
+     private void updateNewSignedUrlInEntity(Sound sound, FirebaseAudioDTO newSignedUrl){
+        sound.setAudioUrl(newSignedUrl.getSignedUrl());
+        sound.setCreationDateAudioTokenUrl(newSignedUrl.getCreationDateAudioUrlToken());
+        sound.setExpirationDateAudioTokenUrl(newSignedUrl.getExpirationDateAudioUrlToken());
     }
 
 }
